@@ -6,38 +6,47 @@ function Todos() {
     const activeCount = todos.filter((todo) => !todo.completed).length
     const completedCount = todos.length - activeCount
     const allCompleted = todos.length > 0 && activeCount === 0
+    const [filter, setFilter] = useState('all')
+    const visibleTodos = todos.filter((todo) => {
+      if (filter === 'active') return !todo.completed
+      if (filter === 'completed') return todo.completed
+      return true
+    })
 
-  function handleSubmit(e) {
+    function handleSubmit(e) {
     e.preventDefault()
     const trimmed = text.trim()
     if (trimmed === '') {
       return
     }
     const newTodo = { id: crypto.randomUUID(), text: trimmed, completed: false }
-    setTodos([...todos, newTodo])
-    setText('')
+      setTodos([...todos, newTodo])
+      setText('')
     }
  
-  function handleToggle(id) {
-    setTodos(
+    function handleToggle(id) {
+      setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        )
       )
-    )
     }
 
     function handleDelete(id) {
-    setTodos(todos.filter((todo) => todo.id !== id))
+      setTodos(todos.filter((todo) => todo.id !== id))
     }
 
     function handleClearCompleted() {
-  setTodos(todos.filter((todo) => !todo.completed))
+      setTodos(todos.filter((todo) => !todo.completed))
     }
  
     function handleToggleAll() {
-    setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })))
+      setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })))
     }
-  return (
+    const selectedClass = 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+    const unselectedClass = 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'
+
+    return (
     <section className="mx-auto max-w-[550px]">
         <h1 className="text-center text-[80px] font-extralight text-[#b83f45]">
           todos
@@ -65,7 +74,7 @@ function Todos() {
           </label>
           
           <ul>
-            {todos.map((todo) => (
+            {visibleTodos.map((todo) => (
               <li
                 key={todo.id}
                 className="group relative flex items-center border-b border-[#ededed] text-2xl"
@@ -103,31 +112,34 @@ function Todos() {
             {activeCount === 1 ? 'item' : 'items'} left
             </span>
             <ul className="flex justify-center gap-1">
-            <li>
-              <button
-                type="button"
-                className="cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]"
-              >
-                All
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
-              >
-                Active
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
-              >
-                Completed
-              </button>
-            </li>
-          </ul>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setFilter('all')}
+                  className={filter === 'all' ? selectedClass : unselectedClass}
+                >
+                  All
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setFilter('active')}
+                  className={filter === 'active' ? selectedClass : unselectedClass}
+                >
+                  Active
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setFilter('completed')}
+                  className={filter === 'completed' ? selectedClass : unselectedClass}
+                >
+                  Completed
+                </button>
+              </li>
+            </ul>
             {completedCount > 0 && (
                 <button
                 type="button"
